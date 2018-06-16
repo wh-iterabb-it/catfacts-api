@@ -34,11 +34,7 @@ func GetCatFactsEndpoint(w http.ResponseWriter, req *http.Request) {
 // CreateCatFactEndpoint is used for creating a new catfact
 // and adding it to results
 func CreateCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
-	params := mux.Vars(req)
-	var catfact CatFact
-	_ = jsonNewDecoder(req.Body).Decode(&catfact)
-	catfacts = append(catfacts, catfact)
-	json.NewEncode(w).Encode(catfacts)
+	db.createCatFact(w)
 }
 
 // DeleteCatFactEndpoint deletes a catfact
@@ -56,7 +52,6 @@ func DeleteCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
   json.NewEncode(w).Encode(catfacts)
 }
 
-func AddCatFact()
 
 func main() {
 	router := mux.NewRouter()
