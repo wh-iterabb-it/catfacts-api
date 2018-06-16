@@ -5,10 +5,25 @@ import (
 	"log"
 	"net/http"
 
-	db "github.com/wh-iterabb-it/catfacts-api/models"
-
 	"github.com/gorilla/mux"
 )
+
+// a fun* fact about cats
+// * = many facts are not fun
+type CatFact struct {
+	ID     string  `json:"id,omitempty"`
+	Fact   string  `json:"fact,omitempty"`
+	Source *Source `json:"source,omitempty"`
+}
+
+// where the hell did this fact come from?
+type Source struct {
+	Name string `json:"name,omitempty"`
+	Url  string `json:"url,omitempty"`
+}
+
+// catfacts is a collection of CatFact
+var catfacts []CatFact
 
 // GetCatFactsEndpoint is used for getting a collection of catfacts
 func GetCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
@@ -28,13 +43,18 @@ func GetCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
 
 // GetCatFactsEndpoint is used for getting a collection of catfacts
 func GetCatFactsEndpoint(w http.ResponseWriter, req *http.Request) {
-	db.getCatFacts(w)
+	// encodes and returns array of catfacts
+	json.NewEncoder(w).Encode(catfacts)
 }
 
 // CreateCatFactEndpoint is used for creating a new catfact
 // and adding it to results
 func CreateCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
-	db.createCatFact(w)
+	params := mux.Vars(req)
+	var catfact CatFact
+	_ = jsonNewDecoder(req.Body).Decode(&catfact)
+	catfacts = append(catfacts, catfact)
+	json.NewEncode(w).Encode(catfacts)
 }
 
 // DeleteCatFactEndpoint deletes a catfact
@@ -51,7 +71,6 @@ func DeleteCatFactEndpoint(w http.ResponseWriter, req *http.Request) {
 	}
   json.NewEncode(w).Encode(catfacts)
 }
-
 
 func main() {
 	router := mux.NewRouter()
