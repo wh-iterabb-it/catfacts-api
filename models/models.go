@@ -6,10 +6,6 @@ import (
 )
 
 type (
-	Models interface {
-		NewCatFacts() *models
-	}
-
 	// CatFact represents a singular cat fun* fact
 	// * not all facts are fun
 	CatFact struct {
@@ -18,9 +14,6 @@ type (
 		Source_Name string `json:"source_name,omitempty"`
 		Source_Url  string `json:"source_url,omitempty"`
 	}
-
-	// CatFacts is an array of CatFact objects
-	CatFacts []CatFact
 )
 
 func (c *CatFact) getCatFact(db *sql.DB) error {
@@ -51,16 +44,16 @@ func (c *CatFact) createCatFact(db *sql.DB) error {
 	return nil
 }
 
-func getCatFacts(db *sql.DB, start, count int) ([]catfacts, error) {
+func getCatFacts(db *sql.DB, start int, count int) ([]CatFact, error) {
 	statement := fmt.Sprintf("SELECT id, fact, source_name, source_url FROM catfact LIMIT %d OFFSET %d", count, start)
 	rows, err := db.Query(statement)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	catfacts := []catfact{}
+	catfacts := []CatFact{}
 	for rows.Next() {
-		var c catfact
+		var c CatFact
 		if err := rows.Scan(&c.ID, &c.Fact, &c.Source_Name, &c.Source_Url); err != nil {
 			return nil, err
 		}
